@@ -40,17 +40,17 @@ To run the `PongMaster.py` script, use the following command in your terminal:
 python PongMaster.py
 ```
 
-# 🎯 Gameplay Objective
+## 🎯 Gameplay Objective
 Your goal is simple: be the first to reach 10 points!  
 Block the ball using your paddle and try to outscore your opponent.
 
-## 🎮 Controls
+### 🎮 Controls
 
-### Player 1
+#### Player 1
 - **W** → Move Paddle Up  
 - **S** → Move Paddle Down
 
-### Player 2
+#### Player 2
 - **↑ (Up Arrow)** → Move Paddle Up  
 - **↓ (Down Arrow)** → Move Paddle Down
 
