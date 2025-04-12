@@ -1,11 +1,11 @@
-import turtle
+from turtle import Turtle
 
-class Paddle(turtle.Turtle):
-    def __init__(self, x, y, color):
+class Paddle(Turtle):
+    def __init__(self, x, y, color="white"):
         super().__init__()
         self.shape("square")
         self.color(color)
-        self.shapesize(stretch_wid=6, stretch_len=1)
+        self.shapesize(stretch_wid=5, stretch_len=1)
         self.penup()
         self.goto(x, y)
 

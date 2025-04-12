@@ -1,14 +1,14 @@
-import turtle
+from turtle import Turtle
 
-class Ball(turtle.Turtle):
-    def __init__(self, color):
+class Ball(Turtle):
+    def __init__(self, speed):
         super().__init__()
         self.shape("circle")
-        self.color(color)
+        self.color("yellow")
         self.penup()
-        self.goto(0, 0)
-        self.dx = 0.2
-        self.dy = 0.2
+        self.dx = 10
+        self.dy = 10
+        self.move_speed = speed
 
     def move(self):
         self.goto(self.xcor() + self.dx, self.ycor() + self.dy)
