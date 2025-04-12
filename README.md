@@ -23,9 +23,7 @@ A fun and interactive two-player Pong game built using Python's `turtle` module.
 
 ## 📸 Game Preview
 
-> *Insert gameplay GIF or screenshot here*
-
-![Game Preview]("D:\My Projects\PongMaster\assets\image.jpg")
+![Game Preview](assets/image.jpg)
 
 ---
 
