@@ -1,21 +1,17 @@
 import turtle
 
-class Ball:
-    def __init__(self):
-        self.ball = turtle.Turtle()
-        self.ball.speed(0)
-        self.ball.shape("circle")
-        self.ball.color("white")
-        self.ball.penup()
-        self.ball.goto(0, 0)
-        self.dx = 3
-        self.dy = 3
+class Ball(turtle.Turtle):
+    def __init__(self, color):
+        super().__init__()
+        self.shape("circle")
+        self.color(color)
+        self.penup()
+        self.goto(0, 0)
+        self.dx = 0.2
+        self.dy = 0.2
 
     def move(self):
-        x = self.ball.xcor() + self.dx
-        y = self.ball.ycor() + self.dy
-        self.ball.setx(x)
-        self.ball.sety(y)
+        self.goto(self.xcor() + self.dx, self.ycor() + self.dy)
 
     def bounce_y(self):
         self.dy *= -1
@@ -24,14 +20,5 @@ class Ball:
         self.dx *= -1
 
     def reset_position(self):
-        self.ball.goto(0, 0)
-        self.dx *= -1
-
-    def xcor(self):
-        return self.ball.xcor()
-
-    def ycor(self):
-        return self.ball.ycor()
-
-    def distance(self, paddle):
-        return self.ball.distance(paddle)
+        self.goto(0, 0)
+        self.bounce_x()
