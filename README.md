@@ -23,7 +23,7 @@ A fun and interactive two-player Pong game built using Python's `turtle` module.
 
 ## 📸 Game Preview
 
-![Game Preview](assets/image.jpg)
+![Game Preview](assets/screenshot.jpg)
 
 ---
 
