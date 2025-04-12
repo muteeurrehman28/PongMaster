@@ -38,7 +38,6 @@ class Ball(turtle.Turtle):
         self.reset()
 
     def reset(self):
-        # start at center but with random direction
         self.goto(0, 0)
         self.dx = self.base_speed * random.choice((1, -1))
         self.dy = self.base_speed * random.choice((1, -1))
@@ -50,7 +49,6 @@ class Ball(turtle.Turtle):
         self.dy *= -1
 
     def bounce_x(self):
-        # reverse X and slightly increase, but cap it
         new_speed = min(abs(self.dx) * 1.02, MAX_BALL_SPEED)
         self.dx = -new_speed if self.dx > 0 else new_speed
 
@@ -155,19 +153,27 @@ class PongMaster:
         if abs(self.ball.ycor()) > WIN_HEIGHT//2 - 20:
             self.ball.bounce_y()
 
-        # paddle bounce
-        if (self.ball.xcor() > WIN_WIDTH//2 - 60 and self.ball.distance(self.right_paddle) < 60) or \
-           (self.ball.xcor() < -WIN_WIDTH//2 + 60 and self.ball.distance(self.left_paddle) < 60):
+        # ── Improved Paddle Collisions ──
+        # Right paddle
+        if (self.ball.xcor() > WIN_WIDTH//2 - 60 and
+            abs(self.ball.ycor() - self.right_paddle.ycor()) < 50):
+            self.ball.setx(WIN_WIDTH//2 - 60)      # push out
             self.ball.bounce_x()
 
-        # scoring: just bounce off the side instead of reset
+        # Left paddle
+        if (self.ball.xcor() < -WIN_WIDTH//2 + 60 and
+            abs(self.ball.ycor() - self.left_paddle.ycor()) < 50):
+            self.ball.setx(-WIN_WIDTH//2 + 60)     # push out
+            self.ball.bounce_x()
+
+        # scoring: bounce off side wall
         if abs(self.ball.xcor()) > WIN_WIDTH//2 - 10:
-            # award point
             if self.ball.xcor() > 0:
                 self.scoreboard.left_point()
             else:
                 self.scoreboard.right_point()
-            # bounce off side wall
+
+            # bounce instead of reset
             self.ball.bounce_x()
 
             # check win
