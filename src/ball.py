@@ -1,14 +1,18 @@
-from turtle import Turtle, Screen
+import turtle
+import random
 
-class Ball(Turtle):
-    def __init__(self, speed):
-        super().__init__()
-        self.shape("circle")
+class Ball(turtle.Turtle):
+    def __init__(self, base_speed):
+        super().__init__(shape="circle")
         self.color("yellow")
         self.penup()
-        self.dx = 2  # Speed in the x direction
-        self.dy = 2  # Speed in the y direction
-        self.move_speed = speed
+        self.base_speed = base_speed
+        self.reset()
+
+    def reset(self):
+        self.goto(0, 0)
+        self.dx = self.base_speed * random.choice((1, -1))
+        self.dy = self.base_speed * random.choice((1, -1))
 
     def move(self):
         self.goto(self.xcor() + self.dx, self.ycor() + self.dy)
@@ -17,13 +21,5 @@ class Ball(Turtle):
         self.dy *= -1
 
     def bounce_x(self):
-        self.dx *= -1
-
-    def check_collision_with_wall(self):
-        # If the ball hits the top or bottom wall, bounce
-        if self.ycor() > 290 or self.ycor() < -290:
-            self.bounce_y()
-
-        # If the ball hits the left or right wall, bounce
-        if self.xcor() > 290 or self.xcor() < -290:
-            self.bounce_x()
+        new_speed = min(abs(self.dx) * 1.02, 15)
+        self.dx = -new_speed if self.dx > 0 else new_speed

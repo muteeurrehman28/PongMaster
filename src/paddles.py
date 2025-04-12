@@ -1,18 +1,18 @@
-from turtle import Turtle
+import turtle
 
-class Paddle(Turtle):
-    def __init__(self, x, y, color="white"):
-        super().__init__()
-        self.shape("square")
-        self.color(color)
-        self.shapesize(stretch_wid=5, stretch_len=1)
+class Paddle(turtle.Turtle):
+    def __init__(self, x_pos, name):
+        super().__init__(shape="square")
+        self.name = name
+        self.color("white")
+        self.shapesize(stretch_wid=6, stretch_len=1)
         self.penup()
-        self.goto(x, y)
+        self.goto(x_pos, 0)
 
     def move_up(self):
-        if self.ycor() < 250:
+        if self.ycor() < 600//2 - 40:
             self.sety(self.ycor() + 20)
 
     def move_down(self):
-        if self.ycor() > -240:
+        if self.ycor() > -600//2 + 40:
             self.sety(self.ycor() - 20)

@@ -1,94 +1,124 @@
-from turtle import Screen, Turtle
+import turtle
 from src.paddles import Paddle
 from src.ball import Ball
+from src.scoreboard import Scoreboard
 
-class Game:
+# CONSTANTS
+WIN_WIDTH, WIN_HEIGHT = 800, 600
+MAX_BALL_SPEED = 15
+FRAME_DELAY = 20  # milliseconds
+
+class PongMaster:
     def __init__(self):
-        self.screen = Screen()
-        self.screen.title("🏓 PongMaster Game")
-        self.screen.bgcolor("black")
-        self.screen.setup(width=800, height=600)
-        self.screen.tracer(0)
+        # screen
+        self.wn = turtle.Screen()
+        self.wn.title("🏓 PongMaster")
+        self.wn.bgcolor("black")
+        self.wn.setup(width=WIN_WIDTH, height=WIN_HEIGHT)
+        self.wn.tracer(0)
 
-        self.writer = Turtle()
-        self.writer.hideturtle()
-        self.writer.color("white")
-        self.writer.penup()
+        self.draw_border()
+        self.speed, self.left_name, self.right_name = self.get_player_info()
 
-        self.left_player_name = ""
-        self.right_player_name = ""
+        # game objects
+        self.left_paddle = Paddle(-WIN_WIDTH//2 + 40, self.left_name)
+        self.right_paddle = Paddle(WIN_WIDTH//2 - 40, self.right_name)
+        self.ball = Ball(self.speed)
+        self.scoreboard = Scoreboard(self.left_name, self.right_name)
 
-    def show_start_screen(self):
-        self.writer.clear()
-        self.writer.goto(0, 150)
-        self.writer.write("🎮 Welcome to PongMaster 🎮", align="center", font=("Arial", 30, "bold"))
+        # controls
+        self.paused = False
+        self.wn.listen()
+        self.wn.onkeypress(self.left_paddle.move_up, "w")
+        self.wn.onkeypress(self.left_paddle.move_down, "s")
+        self.wn.onkeypress(self.right_paddle.move_up, "Up")
+        self.wn.onkeypress(self.right_paddle.move_down, "Down")
+        self.wn.onkeypress(self.toggle_pause, "p")
+        self.wn.onkeypress(self.toggle_pause, "r")
 
-        self.writer.goto(0, 70)
-        self.writer.write("Choose Difficulty:\nE - Easy  |  M - Medium  |  H - Hard", align="center", font=("Arial", 18, "normal"))
+        # start loop
+        self.game_loop()
+        self.wn.mainloop()
 
-        self.writer.goto(0, -20)
-        self.writer.write("Press E, M, or H to Start", align="center", font=("Arial", 16, "italic"))
+    def draw_border(self):
+        border = turtle.Turtle()
+        border.hideturtle()
+        border.color("white")
+        border.penup()
+        border.goto(-WIN_WIDTH//2, WIN_HEIGHT//2)
+        border.pendown()
+        for _ in range(4):
+            border.forward(WIN_WIDTH if _ % 2 == 0 else WIN_HEIGHT)
+            border.right(90)
 
-        self.screen.listen()
-        self.screen.onkey(lambda: self.start_game('easy'), "e")
-        self.screen.onkey(lambda: self.start_game('medium'), "m")
-        self.screen.onkey(lambda: self.start_game('hard'), "h")
-        self.screen.mainloop()
+    def get_player_info(self):
+        diff = self.wn.textinput("Difficulty", "Choose: Easy / Medium / Hard").lower()
+        if diff == "easy":
+            speed = 4
+        elif diff == "hard":
+            speed = 8
+        else:
+            speed = 6  # medium default
 
-    def start_game(self, mode):
-        self._mode = mode
-        speed_map = {"easy": 0.1, "medium": 0.07, "hard": 0.05}
-        self.ball_speed = speed_map[mode]
+        left_name = self.wn.textinput("Player 1", "Enter name for Player 1:") or "Left"
+        right_name = self.wn.textinput("Player 2", "Enter name for Player 2:") or "Right"
+        return speed, left_name, right_name
 
-        self.writer.clear()
-        self.left_player_name = self.screen.textinput("Player 1", "Enter Left Player Name:") or "Player 1"
-        self.right_player_name = self.screen.textinput("Player 2", "Enter Right Player Name:") or "Player 2"
+    def toggle_pause(self):
+        self.paused = not self.paused
+        if not self.paused:
+            self.game_loop()
 
-        self.setup_game()
-        self.run()
+    def game_loop(self):
+        if self.paused:
+            return
 
-    def setup_game(self):
-        self.paddle_left = Paddle(-350, 0, "cyan")
-        self.paddle_right = Paddle(350, 0, "magenta")
-        self.ball = Ball(self.ball_speed)
-        self.score_left = 0
-        self.score_right = 0
+        self.ball.move()
 
-        self.writer.goto(0, 260)
-        self.update_score()
+        # wall bounce
+        if abs(self.ball.ycor()) > WIN_HEIGHT//2 - 20:
+            self.ball.bounce_y()
 
-        self.screen.listen()
-        self.screen.onkeypress(self.paddle_left.move_up, "w")
-        self.screen.onkeypress(self.paddle_left.move_down, "s")
-        self.screen.onkeypress(self.paddle_right.move_up, "Up")
-        self.screen.onkeypress(self.paddle_right.move_down, "Down")
+        # Improved Paddle Collisions
+        # Right paddle
+        if (self.ball.xcor() > WIN_WIDTH//2 - 60 and
+            abs(self.ball.ycor() - self.right_paddle.ycor()) < 50):
+            self.ball.setx(WIN_WIDTH//2 - 60)      # push out
+            self.ball.bounce_x()
 
-    def update_score(self):
-        self.writer.clear()
-        self.writer.goto(0, 260)
-        self.writer.write(f"{self.left_player_name}: {self.score_left}    {self.right_player_name}: {self.score_right}", align="center", font=("Arial", 18, "bold"))
+        # Left paddle
+        if (self.ball.xcor() < -WIN_WIDTH//2 + 60 and
+            abs(self.ball.ycor() - self.left_paddle.ycor()) < 50):
+            self.ball.setx(-WIN_WIDTH//2 + 60)     # push out
+            self.ball.bounce_x()
 
-    def run(self):
-        while True:
-            self.screen.update()
-            self.ball.move()
+        # scoring: bounce off side wall
+        if abs(self.ball.xcor()) > WIN_WIDTH//2 - 10:
+            if self.ball.xcor() > 0:
+                self.scoreboard.left_point()
+            else:
+                self.scoreboard.right_point()
 
-            # Bounce on walls
-            if self.ball.ycor() > 280 or self.ball.ycor() < -280:
-                self.ball.bounce_y()
+            # bounce instead of reset
+            self.ball.bounce_x()
 
-            # Bounce on paddles
-            if (self.ball.xcor() > 330 and self.ball.distance(self.paddle_right) < 50) or \
-               (self.ball.xcor() < -330 and self.ball.distance(self.paddle_left) < 50):
-                self.ball.bounce_x()
+            # check win
+            if self.scoreboard.left_score == 10:
+                return self.end_game(self.left_name)
+            if self.scoreboard.right_score == 10:
+                return self.end_game(self.right_name)
 
-            # Missed
-            if self.ball.xcor() > 380:
-                self.score_left += 1
-                self.update_score()
-                self.ball.reset_position()
+        self.wn.update()
+        self.wn.ontimer(self.game_loop, FRAME_DELAY)
 
-            if self.ball.xcor() < -380:
-                self.score_right += 1
-                self.update_score()
-                self.ball.reset_position()
+    def end_game(self, winner):
+        self.wn.clear()
+        self.wn.bgcolor("black")
+        msg = turtle.Turtle()
+        msg.color("white")
+        msg.hideturtle()
+        msg.write(f"{winner} wins! 🎉", align="center", font=("Courier", 36, "bold"))
+        msg.goto(0, -50)
+        msg.write("Click to play again or close window to quit", align="center", font=("Courier", 16, "normal"))
+        self.wn.exitonclick()
+        self.__init__()  # restart cleanly
