@@ -1,27 +1,37 @@
 import turtle
 
-class Ball(turtle.Turtle):
+class Ball:
     def __init__(self):
-        super().__init__()
-        self.shape("square")
-        self.color("white")
-        self.penup()
-        self.goto(0, 0)
-        self.dx = 0.2
-        self.dy = 0.2
-        self.speed = 2  # Default ball speed
+        self.ball = turtle.Turtle()
+        self.ball.speed(0)
+        self.ball.shape("circle")
+        self.ball.color("white")
+        self.ball.penup()
+        self.ball.goto(0, 0)
+        self.dx = 3
+        self.dy = 3
 
     def move(self):
-        self.setx(self.xcor() + self.dx * self.speed)
-        self.sety(self.ycor() + self.dy * self.speed)
+        x = self.ball.xcor() + self.dx
+        y = self.ball.ycor() + self.dy
+        self.ball.setx(x)
+        self.ball.sety(y)
 
-        # Ball boundary collision
-        if self.ycor() > 290:
-            self.dy *= -1
-        if self.ycor() < -290:
-            self.dy *= -1
+    def bounce_y(self):
+        self.dy *= -1
+
+    def bounce_x(self):
+        self.dx *= -1
 
     def reset_position(self):
-        self.goto(0, 0)
-        self.dy *= -1
+        self.ball.goto(0, 0)
         self.dx *= -1
+
+    def xcor(self):
+        return self.ball.xcor()
+
+    def ycor(self):
+        return self.ball.ycor()
+
+    def distance(self, paddle):
+        return self.ball.distance(paddle)
