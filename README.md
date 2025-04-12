@@ -38,6 +38,7 @@ To run the `PongMaster.py` script, use the following command in your terminal:
 
 ```bash
 python PongMaster.py
+```
 
 # 🎯 Gameplay Objective
 Your goal is simple: be the first to reach 10 points!  
